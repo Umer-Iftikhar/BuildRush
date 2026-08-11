@@ -1,4 +1,12 @@
+using BidRush.Constants;
 using BidRush.Data;
+using BidRush.Middlewares;
+using BidRush.Services.Implementations;
+using BidRush.Services.Interfaces;
+using BidRush.Settings;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -6,6 +14,57 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddScoped<DapperContext>();
+
+builder.Services.Configure<JwtConfig>(builder.Configuration.GetSection("Jwt"));
+
+builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
+builder.Services.AddScoped<IUserService, UserService>();
+
+
+var jwtConfig = builder.Configuration.GetSection("Jwt").Get<JwtConfig>()!;
+
+builder.Services
+    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+
+            ValidIssuer = jwtConfig.Issuer,
+            ValidAudience = jwtConfig.Audience,
+
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(jwtConfig.SecretKey)),
+
+            ClockSkew = TimeSpan.Zero
+        };
+
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                if (context.HttpContext.Items.TryGetValue(CookieConstants.AccessToken, out var token))
+                {
+                    context.Token = token as string;
+                }
+                else if (context.Request.Cookies.TryGetValue(
+                             CookieConstants.AccessToken,
+                             out var cookieToken))
+                {
+                    context.Token = cookieToken;
+                }
+
+                return Task.CompletedTask;
+            }
+        };
+    });
+
+builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
@@ -20,7 +79,11 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseRouting();
 
+app.UseMiddleware<RefreshTokenMiddleware>();
+
+app.UseAuthentication();
 app.UseAuthorization();
+
 
 app.MapStaticAssets();
 
