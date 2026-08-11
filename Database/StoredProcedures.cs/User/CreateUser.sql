@@ -62,7 +62,8 @@ BEGIN
         SELECT
             200 AS ResponseCode,
             'User created successfully.' AS ResponseMessage,
-            @UserId AS UserId;
+            @UserId AS UserId,
+            'User' AS RoleName;
 
     END TRY
     BEGIN CATCH
