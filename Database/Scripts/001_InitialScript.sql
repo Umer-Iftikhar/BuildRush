@@ -109,6 +109,9 @@ BEGIN
             CONSTRAINT DF_Auctions_Status
                 DEFAULT ('Pending'),
 
+		IsDeleted BIT NOT NULL
+			CONSTRAINT DF_Auctions_IsDeleted DEFAULT (0),
+
 		CreatorId INT NOT NULL,
 		CategoryId INT NULL,
 		WinnerId INT NULL,

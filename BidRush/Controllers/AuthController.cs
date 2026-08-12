@@ -71,7 +71,7 @@ namespace BidRush.Controllers
                 return View(model);
             }
             SetAuthenticationCookies(response);
-            TempData["SuccessMessage"] = "Registration successful. Welcome!";
+            TempData["Success"] = "Registration successful. Welcome!";
             return RedirectToAction("Index", "Home");
         }
         #endregion
@@ -107,7 +107,7 @@ namespace BidRush.Controllers
             }
             SetAuthenticationCookies(response);
 
-            TempData["SuccessMessage"] = "Login successful.";
+            TempData["Success"] = "Login successful.";
             return RedirectToAction("Index", "Home");
         }
 

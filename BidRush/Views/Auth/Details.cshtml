@@ -1,0 +1,137 @@
+﻿@model BidRush.ViewModels.AuctionDetailsViewModel
+
+@using BidRush.Enum
+
+@{
+    ViewData["Title"] = Model.Auction.Title;
+}
+
+<div class="auction-details-container">
+
+    <div class="auction-details-header">
+        <div>
+            <h1>@Model.Auction.Title</h1>
+
+            <span class="auction-status">
+                @Model.Auction.Status
+            </span>
+        </div>
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(Model.Auction.ImageUrl))
+    {
+        <div class="auction-image">
+            <img src="@Model.Auction.ImageUrl"
+                 alt="@Model.Auction.Title" />
+        </div>
+    }
+
+    <div class="auction-details-content">
+
+        @if (!string.IsNullOrWhiteSpace(Model.Auction.Description))
+        {
+            <div class="auction-description">
+                <h3>Description</h3>
+
+                <p>
+                    @Model.Auction.Description
+                </p>
+            </div>
+        }
+
+        <div class="auction-info">
+
+            <div class="auction-info-item">
+                <strong>Starting Price</strong>
+                <span>
+                    Rs. @Model.Auction.StartingPrice.ToString("N2")
+                </span>
+            </div>
+
+            <div class="auction-info-item">
+                <strong>Minimum Bid Increment</strong>
+                <span>
+                    Rs. @Model.Auction.MinimumBidIncrement.ToString("N2")
+                </span>
+            </div>
+
+            <div class="auction-info-item">
+                <strong>Start Time</strong>
+                <span>
+                    @Model.Auction.StartTime.ToLocalTime().ToString("g")
+                </span>
+            </div>
+
+            <div class="auction-info-item">
+                <strong>End Time</strong>
+                <span>
+                    @Model.Auction.EndTime.ToLocalTime().ToString("g")
+                </span>
+            </div>
+
+        </div>
+
+        @if (Model.Auction.Status == AuctionStatus.Ended)
+        {
+            <div class="auction-result">
+
+                <h3>Auction Result</h3>
+
+                @if (Model.Auction.WinnerId.HasValue)
+                {
+                    <p>
+                        Winner ID:
+                        @Model.Auction.WinnerId
+                    </p>
+
+                    @if (Model.Auction.WinningBidAmount.HasValue)
+                    {
+                        <p>
+                            Winning Bid:
+                            Rs.
+                            @Model.Auction.WinningBidAmount.Value.ToString("N2")
+                        </p>
+                    }
+                }
+                else
+                {
+                    <p>No winning bid.</p>
+                }
+
+            </div>
+        }
+
+    </div>
+
+    <div class="auction-actions">
+
+        <a asp-action="Index"
+           class="btn btn-secondary">
+            Back to Auctions
+        </a>
+
+        @if (Model.Auction.Status == AuctionStatus.Pending &&
+             Model.IsCreator)
+        {
+            <a asp-action="Edit"
+               asp-route-id="@Model.Auction.Id"
+               class="btn btn-primary">
+                Edit
+            </a>
+
+            <button type="button"
+                    class="btn btn-danger delete-auction-btn"
+                    data-id="@Model.Auction.Id">
+                Delete
+            </button>
+        }
+
+    </div>
+
+</div>
+
+@Html.AntiForgeryToken()
+
+@section Scripts {
+    <script src="~/js/auction.js" asp-append-version="true"></script>
+}

@@ -13,15 +13,22 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+// Database
 builder.Services.AddScoped<DapperContext>();
 
+// Settings
 builder.Services.Configure<JwtConfig>(builder.Configuration.GetSection("Jwt"));
+builder.Services.Configure<ImageStorageSettings>(builder.Configuration.GetSection("ImageStorage"));
 
+// Services
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IAuctionService, AuctionService>();
+builder.Services.AddScoped<IImageService, ImageService>();
 
 
+// JWT
 var jwtConfig = builder.Configuration.GetSection("Jwt").Get<JwtConfig>()!;
 
 builder.Services
