@@ -26,6 +26,7 @@ builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IAuctionService, AuctionService>();
 builder.Services.AddScoped<IImageService, ImageService>();
+builder.Services.AddScoped<IBidService, BidService>();
 
 
 // JWT

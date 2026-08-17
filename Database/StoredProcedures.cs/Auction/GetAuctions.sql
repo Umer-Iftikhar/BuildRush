@@ -40,32 +40,55 @@ BEGIN
             'Auctions retrieved successfully.' AS ResponseMessage;
 
         SELECT
-            Id,
-            Title,
-            Description,
-            ImageUrl,
-            StartingPrice,
-            MinimumBidIncrement,
-            StartTime,
-            EndTime,
-            Status,
-            IsDeleted,
-            CreatorId,
-            CategoryId,
-            WinnerId,
-            WinningBidAmount,
-            CreatedAt
-        FROM dbo.Auctions
-        WHERE IsDeleted = 0
-          AND (@AuctionId IS NULL OR Id = @AuctionId)
+            a.Id,
+            a.Title,
+            a.Description,
+            a.ImageUrl,
+            a.StartingPrice,
+            a.MinimumBidIncrement,
+            a.StartTime,
+            a.EndTime,
+            a.Status,
+            a.IsDeleted,
+            a.CreatorId,
+            a.CategoryId,
+            a.WinnerId,
+            a.WinningBidAmount,
+            a.CreatedAt,
+
+            MAX(b.Amount) AS CurrentHighestBid,
+            COUNT(b.Id) AS BidCount
+
+        FROM dbo.Auctions a
+        LEFT JOIN dbo.Bids b
+          ON b.AuctionId = a.Id
+        WHERE a.IsDeleted = 0
+          AND (@AuctionId IS NULL OR a.Id = @AuctionId)
           AND
           (
               @Search IS NULL
               OR LTRIM(RTRIM(@Search)) = ''
-              OR Title LIKE '%' + @Search + '%'
-              OR Description LIKE '%' + @Search + '%'
-              OR Id = TRY_CONVERT(INT, LTRIM(RTRIM(@Search)))
+              OR a.Title LIKE '%' + @Search + '%'
+              OR a.Description LIKE '%' + @Search + '%'
+              OR a.Id = TRY_CONVERT(INT, LTRIM(RTRIM(@Search)))
           )
+         GROUP BY
+            a.Id,
+            a.Title,
+            a.Description,
+            a.ImageUrl,
+            a.StartingPrice,
+            a.MinimumBidIncrement,
+            a.StartTime,
+            a.EndTime,
+            a.Status,
+            a.IsDeleted,
+            a.CreatorId,
+            a.CategoryId,
+            a.WinnerId,
+            a.WinningBidAmount,
+            a.CreatedAt
+
         ORDER BY CreatedAt DESC;
 
     END TRY

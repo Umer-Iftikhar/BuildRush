@@ -134,6 +134,82 @@
         }
 
     </div>
+    <div class="auction-bidding">
+
+        <div class="auction-bid-summary">
+
+            <div>
+                <span>Starting Price</span>
+                <strong>
+                    Rs. @Model.Auction.StartingPrice.ToString("N2")
+                </strong>
+            </div>
+
+            <div>
+                <span>Current Highest Bid</span>
+                <strong>
+                    @if (Model.Auction.CurrentHighestBid.HasValue)
+                    {
+                        <span>
+                            Rs. @Model.Auction.CurrentHighestBid.Value.ToString("N2")
+                        </span>
+                    }
+                    else
+                    {
+                        <span>No bids yet</span>
+                    }
+                </strong>
+            </div>
+
+            <div>
+                <span>Minimum Next Bid</span>
+                <strong>
+                    Rs. @Model.Auction.MinimumNextBid.ToString("N2")
+                </strong>
+            </div>
+
+            <div>
+                <span>Total Bids</span>
+                <strong>
+                    @Model.Auction.BidCount
+                </strong>
+            </div>
+
+        </div>
+
+        @if (Model.Auction.Status == AuctionStatus.Active && !Model.IsCreator)
+        {
+            <form id="placeBidForm">
+
+                @Html.AntiForgeryToken()
+
+                <input type="hidden" name="auctionId" value="@Model.Auction.Id" />
+
+                <div class="form-group">
+
+                    <label for="bidAmount">
+                        Your Bid
+                    </label>
+
+                    <input id="bidAmount"
+                           name="amount"
+                           type="number"
+                           class="form-control"
+                           min="@Model.Auction.MinimumNextBid"
+                           step="0.01"
+                           value="@Model.Auction.MinimumNextBid"
+                           required />
+
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    Place Bid
+                </button>
+
+            </form>
+        }
+    
+</div>
 
 </div>
 

@@ -19,5 +19,8 @@ namespace BidRush.DTOs.Response
         public int? WinnerId { get; set; }
         public decimal? WinningBidAmount { get; set; }
         public DateTime CreatedAt { get; set; }
+        public decimal? CurrentHighestBid { get; set; }
+        public int BidCount { get; set; }
+        public decimal MinimumNextBid => (CurrentHighestBid ?? StartingPrice) + MinimumBidIncrement;
     }
 }

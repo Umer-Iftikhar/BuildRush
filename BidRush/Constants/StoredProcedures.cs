@@ -23,5 +23,9 @@
         // Categories
         public const string GetCategories = "dbo.GetCategories";
 
+
+        // Bids
+        public const string PlaceBid = "dbo.PlaceBid";
+
     }
 }
