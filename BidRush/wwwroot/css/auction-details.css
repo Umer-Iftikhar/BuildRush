@@ -1,0 +1,14 @@
+﻿.auction-details-image {
+    width: 100%;
+    height: 400px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+    .auction-details-image .auction-image {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    }

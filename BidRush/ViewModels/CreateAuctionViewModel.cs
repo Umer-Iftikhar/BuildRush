@@ -1,4 +1,5 @@
-﻿using BidRush.DTOs.Response;
+﻿using BidRush.CustomAttributes;
+using BidRush.DTOs.Response;
 using System.ComponentModel.DataAnnotations;
 
 namespace BidRush.ViewModels
@@ -21,10 +22,12 @@ namespace BidRush.ViewModels
         public decimal MinimumBidIncrement { get; set; }
 
         [Required]
-        public DateTime StartTime { get; set; }
+        [FutureDateTime]
+        public DateTime? StartTime { get; set; }
 
         [Required]
-        public DateTime EndTime { get; set; }
+        [FutureDateTime]
+        public DateTime? EndTime { get; set; }
 
         public int? CategoryId { get; set; }
 

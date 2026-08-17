@@ -2,7 +2,8 @@ USE BidRushDb;
 go
 
 CREATE OR ALTER PROCEDURE dbo.GetAuctions
-    @AuctionId INT = NULL
+    @AuctionId INT = NULL,
+    @Search NVARCHAR(200) = NULL
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -57,6 +58,14 @@ BEGIN
         FROM dbo.Auctions
         WHERE IsDeleted = 0
           AND (@AuctionId IS NULL OR Id = @AuctionId)
+          AND
+          (
+              @Search IS NULL
+              OR LTRIM(RTRIM(@Search)) = ''
+              OR Title LIKE '%' + @Search + '%'
+              OR Description LIKE '%' + @Search + '%'
+              OR Id = TRY_CONVERT(INT, LTRIM(RTRIM(@Search)))
+          )
         ORDER BY CreatedAt DESC;
 
     END TRY

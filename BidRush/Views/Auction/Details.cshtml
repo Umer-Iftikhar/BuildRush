@@ -122,14 +122,24 @@
 
         @if (Model.IsCreator && Model.Auction.Status == AuctionStatus.Pending)
         {
-            <button type="button" class="btn btn-danger delete-auction-btn" data-id="@Model.Auction.Id">
-                Delete Auction
-            </button>
+            <form id="deleteAuctionForm">
+                @Html.AntiForgeryToken()
+
+                <button type="button"
+                        class="btn btn-danger delete-auction-btn"
+                        data-id="@Model.Auction.Id">
+                    Delete Auction
+                </button>
+            </form>
         }
 
     </div>
 
 </div>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/auction-details.css" />
+}
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />

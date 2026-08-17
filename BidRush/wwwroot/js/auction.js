@@ -28,23 +28,60 @@
                 }
             );
 
-            const result = await response.json();
+            console.log("Delete response status:", response.status);
+            console.log(
+                "Delete response content-type:",
+                response.headers.get("content-type")
+            );
 
-            if (result.responseCode !== 200) {
-                showToast(result.responseMessage, "error");
+            const responseText = await response.text();
+
+            console.log("Delete raw response:", responseText);
+
+            let result;
+
+            try {
+                result = JSON.parse(responseText);
+            }
+            catch (jsonError) {
+
+                console.error(
+                    "Response is not valid JSON:",
+                    jsonError
+                );
+
+                showToast(
+                    "Server returned an invalid response. Check the browser console.",
+                    "error"
+                );
+
                 return;
             }
 
-            showToast(result.responseMessage, "success");
+            if (result.responseCode !== 200) {
+                showToast(
+                    result.responseMessage,
+                    "error"
+                );
+
+                return;
+            }
+
+            showToast(
+                result.responseMessage,
+                "success"
+            );
 
             setTimeout(() => {
                 window.location.href = "/Auction/Index";
             }, 1000);
-
         }
         catch (error) {
 
-            console.error("Delete auction error:", error);
+            console.error(
+                "Delete auction error:",
+                error
+            );
 
             showToast(
                 "An unexpected error occurred while deleting the auction.",

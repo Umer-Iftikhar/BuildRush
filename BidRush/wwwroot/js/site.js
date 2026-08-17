@@ -17,7 +17,9 @@ function showLoader(element, message = "Loading...") {
 
 
 function getCsrfToken() {
-    return document.querySelector('meta[name="csrf-token"]').content;
+    return document.querySelector(
+        '#deleteAuctionForm input[name="__RequestVerificationToken"]'
+    ).value;
 }
 
 
@@ -32,17 +34,17 @@ function showToast(message, type = "success") {
     const config = {
         success: {
             title: "Success",
-            icon: "/icons/check-circle.svg",
+            icon: "✓",
             cssClass: "toast-success"
         },
         warning: {
             title: "Warning",
-            icon: "/icons/exclamation-circle.svg",
+            icon: "!",
             cssClass: "toast-warning"
         },
         error: {
             title: "Error",
-            icon: "/icons/x-circle.svg",
+            icon: "×",
             cssClass: "toast-error"
         }
     };
@@ -59,8 +61,8 @@ function showToast(message, type = "success") {
 
     toastTitle.textContent = current.title;
     toastMessage.textContent = message;
-    toastIcon.src = current.icon;
-    toastIcon.alt = current.title;
+    toastIcon.textContent = current.icon;
+    toastIcon.setAttribute("aria-label", current.title);
 
     const toast = bootstrap.Toast.getOrCreateInstance(toastElement);
 

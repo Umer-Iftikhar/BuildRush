@@ -22,6 +22,22 @@ namespace BidRush.Services.Implementations
         #region Create Auction
         public async Task<AuctionDto> CreateAuctionAsync(CreateAuctionRequestDto request, int creatorId, IFormFile? image)
         {
+            if (request.StartTime <= DateTime.UtcNow)
+            {
+                return new AuctionDto
+                {
+                    ResponseCode = 400,
+                    ResponseMessage = "Start time must be in the future."
+                };
+            }
+            if (request.EndTime <= DateTime.UtcNow)
+            {
+                return new AuctionDto
+                {
+                    ResponseCode = 400,
+                    ResponseMessage = "End time must be in the future."
+                };
+            }
             if (request.EndTime <= request.StartTime)
             {
                 return new AuctionDto
@@ -166,6 +182,51 @@ namespace BidRush.Services.Implementations
                 commandType: CommandType.StoredProcedure);
 
             return await multi.ReadSingleAsync<SpResponseDto>();
+        }
+        #endregion
+
+        #region Get All Auctions
+        public async Task<IEnumerable<AuctionDto>> GetAuctionsAsync(string? search)
+        {
+            using var connection = _context.CreateConnection();
+
+            using var multi = await connection.QueryMultipleAsync(
+                StoredProcedures.GetAuctions,
+                new
+                {
+                    Search = search
+                },
+                commandType: CommandType.StoredProcedure);
+
+            var response = await multi.ReadSingleAsync<SpResponseDto>();
+
+            if (response.ResponseCode != 200)
+            {
+                return Enumerable.Empty<AuctionDto>();
+            }
+
+            var auctions = (await multi.ReadAsync<AuctionDto>()).ToList();
+
+            foreach (var auction in auctions)
+            {
+
+                if (!string.IsNullOrWhiteSpace(auction.ImageUrl))
+                {
+                    var image = await _imageService.GetImageAsync(
+                        auction.ImageUrl);
+
+                    if (image.ResponseCode != 200)
+                    {
+                        auction.ImageUrl = null;
+                    }
+                    else
+                    {
+                        auction.ImageUrl = image.FilePath;
+                    }
+                }
+            }
+
+            return auctions;
         }
         #endregion
     }

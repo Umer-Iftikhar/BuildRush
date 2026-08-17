@@ -57,8 +57,8 @@ namespace BidRush.Controllers
                 Description = model.Description,
                 StartingPrice = model.StartingPrice,
                 MinimumBidIncrement = model.MinimumBidIncrement,
-                StartTime = model.StartTime,
-                EndTime = model.EndTime,
+                StartTime = model.StartTime!.Value,
+                EndTime = model.EndTime!.Value,
                 CategoryId = model.CategoryId
             };
 
@@ -121,15 +121,29 @@ namespace BidRush.Controllers
                 });
             }
 
-            var result = await _auctionService.DeleteAuctionAsync(
-                id,
-                creatorId);
+            var result = await _auctionService.DeleteAuctionAsync(id, creatorId);
 
             return Json(new
             {
                 responseCode = result.ResponseCode,
                 responseMessage = result.ResponseMessage
             });
+        }
+        #endregion
+
+        #region Index
+        [HttpGet]
+        public async Task<IActionResult> Index(string? search)
+        {
+            var auctions = await _auctionService.GetAuctionsAsync(search);
+
+            var model = new AuctionIndexViewModel
+            {
+                Search = search,
+                Auctions = auctions
+            };
+
+            return View(model);
         }
         #endregion
     }

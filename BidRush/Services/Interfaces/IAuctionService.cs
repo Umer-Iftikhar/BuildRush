@@ -10,5 +10,6 @@ namespace BidRush.Services.Interfaces
         Task<IEnumerable<CategoryResponseDto>> GetCategoriesAsync();
         Task<AuctionDto> GetAuctionAsync(int auctionId);
         Task<SpResponseDto> DeleteAuctionAsync(int auctionId, int creatorId);
+        Task<IEnumerable<AuctionDto>> GetAuctionsAsync(string? search);
     }
 }

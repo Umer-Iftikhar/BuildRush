@@ -66,7 +66,7 @@
             <div class="form-group">
                 <label asp-for="StartTime"></label>
 
-                <input asp-for="StartTime" class="form-control" type="datetime-local" />
+                <input asp-for="StartTime" class="form-control" type="datetime-local" min="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")" />
 
                 <span asp-validation-for="StartTime" class="text-danger"></span>
             </div>
@@ -74,7 +74,7 @@
             <div class="form-group">
                 <label asp-for="EndTime"></label>
 
-                <input asp-for="EndTime" class="form-control" type="datetime-local" />
+                <input asp-for="EndTime" class="form-control" type="datetime-local" min="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")" />
 
                 <span asp-validation-for="EndTime" class="text-danger"></span>
             </div>
