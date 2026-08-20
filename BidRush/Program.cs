@@ -1,5 +1,6 @@
 using BidRush.Constants;
 using BidRush.Data;
+using BidRush.Hubs;
 using BidRush.Middlewares;
 using BidRush.Services.Background;
 using BidRush.Services.Implementations;
@@ -31,6 +32,9 @@ builder.Services.AddScoped<IBidService, BidService>();
 
 // Background Services
 builder.Services.AddHostedService<AuctionLifecycleBackgroundService>();
+
+// SignalR
+builder.Services.AddSignalR();
 
 // JWT
 var jwtConfig = builder.Configuration.GetSection("Jwt").Get<JwtConfig>()!;
@@ -103,5 +107,6 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
 
+app.MapHub<AuctionHub>("/hubs/auction");
 
 app.Run();

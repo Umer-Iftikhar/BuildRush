@@ -1,6 +1,8 @@
-﻿using BidRush.Services.Interfaces;
+﻿using BidRush.Hubs;
+using BidRush.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using System.Security.Claims;
 
 namespace BidRush.Controllers
@@ -9,9 +11,11 @@ namespace BidRush.Controllers
     public class BidController : Controller
     {
         private readonly IBidService _bidService;
-        public BidController(IBidService bidService)
+        private readonly IHubContext<AuctionHub> _hubContext;
+        public BidController(IBidService bidService, IHubContext<AuctionHub> hubContext)
         {
             _bidService = bidService;
+            _hubContext = hubContext;
         }
         #region Place Bid
         [HttpPost]
@@ -29,6 +33,17 @@ namespace BidRush.Controllers
             }
 
             var result = await _bidService.PlaceBidAsync(auctionId, bidderId, amount);
+
+            if (result.ResponseCode != 200)
+            {
+                return Json(new
+                {
+                    responseCode = result.ResponseCode,
+                    responseMessage = result.ResponseMessage
+                });
+            }
+
+            await _hubContext.Clients.Group($"auction_{auctionId}").SendAsync("BidPlaced", result);
 
             return Json(new
             {

@@ -5,7 +5,7 @@
     ViewData["Title"] = "Auction Details";
 }
 
-<div class="auction-details-container">
+<div class="auction-details-container" data-auction-id="@Model.Auction.Id">
 
     <div class="auction-details-header">
         <h1>@Model.Auction.Title</h1>
@@ -71,7 +71,7 @@
 
                 <div class="auction-detail-row">
                     <span>End Time</span>
-                    <span>
+                    <span id="auctionEndTime">
                         @Model.Auction.EndTime.ToString("dd MMM yyyy, hh:mm tt")
                     </span>
                 </div>
@@ -147,7 +147,7 @@
 
             <div>
                 <span>Current Highest Bid</span>
-                <strong>
+                <strong id="currentHighestBid">
                     @if (Model.Auction.CurrentHighestBid.HasValue)
                     {
                         <span>
@@ -163,14 +163,14 @@
 
             <div>
                 <span>Minimum Next Bid</span>
-                <strong>
+                <strong id="minimumNextBid">
                     Rs. @Model.Auction.MinimumNextBid.ToString("N2")
                 </strong>
             </div>
 
             <div>
                 <span>Total Bids</span>
-                <strong>
+                <strong id="bidCount">
                     @Model.Auction.BidCount
                 </strong>
             </div>
@@ -179,7 +179,7 @@
 
         @if (Model.Auction.Status == AuctionStatus.Active && !Model.IsCreator)
         {
-            <form id="placeBidForm">
+            <form id="placeBidForm" data-minimum-bid-increment="@Model.Auction.MinimumBidIncrement">
 
                 @Html.AntiForgeryToken()
 
@@ -220,5 +220,6 @@
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 
+    <script src="~/lib/signalr/dist/browser/signalr.min.js"></script>
     <script src="~/js/auction.js" asp-append-version="true"></script>
 }
