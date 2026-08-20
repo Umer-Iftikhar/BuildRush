@@ -1,6 +1,7 @@
 using BidRush.Constants;
 using BidRush.Data;
 using BidRush.Middlewares;
+using BidRush.Services.Background;
 using BidRush.Services.Implementations;
 using BidRush.Services.Interfaces;
 using BidRush.Settings;
@@ -13,15 +14,25 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+// Database
 builder.Services.AddScoped<DapperContext>();
 
+// Settings
 builder.Services.Configure<JwtConfig>(builder.Configuration.GetSection("Jwt"));
+builder.Services.Configure<ImageStorageSettings>(builder.Configuration.GetSection("ImageStorage"));
 
+// Services
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IAuctionService, AuctionService>();
+builder.Services.AddScoped<IImageService, ImageService>();
+builder.Services.AddScoped<IBidService, BidService>();
 
+// Background Services
+builder.Services.AddHostedService<AuctionLifecycleBackgroundService>();
 
+// JWT
 var jwtConfig = builder.Configuration.GetSection("Jwt").Get<JwtConfig>()!;
 
 builder.Services

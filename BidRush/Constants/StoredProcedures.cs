@@ -14,5 +14,19 @@
         public const string RevokeRefreshToken = "dbo.RevokeRefreshToken";
         public const string RevokeAllUserTokens = "dbo.RevokeAllUserTokens";
 
+
+        // Auctions
+        public const string CreateAuction = "dbo.CreateAuction";
+        public const string GetAuctions = "dbo.GetAuctions";
+        public const string DeleteAuction = "dbo.DeleteAuction";
+        public const string UpdateAuctionStatuses = "dbo.UpdateAuctionStatuses";
+
+        // Categories
+        public const string GetCategories = "dbo.GetCategories";
+
+
+        // Bids
+        public const string PlaceBid = "dbo.PlaceBid";
+
     }
 }
