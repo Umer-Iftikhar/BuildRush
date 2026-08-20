@@ -1,6 +1,7 @@
 using BidRush.Constants;
 using BidRush.Data;
 using BidRush.Middlewares;
+using BidRush.Services.Background;
 using BidRush.Services.Implementations;
 using BidRush.Services.Interfaces;
 using BidRush.Settings;
@@ -28,6 +29,8 @@ builder.Services.AddScoped<IAuctionService, AuctionService>();
 builder.Services.AddScoped<IImageService, ImageService>();
 builder.Services.AddScoped<IBidService, BidService>();
 
+// Background Services
+builder.Services.AddHostedService<AuctionLifecycleBackgroundService>();
 
 // JWT
 var jwtConfig = builder.Configuration.GetSection("Jwt").Get<JwtConfig>()!;

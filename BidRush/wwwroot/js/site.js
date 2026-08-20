@@ -17,9 +17,11 @@ function showLoader(element, message = "Loading...") {
 
 
 function getCsrfToken() {
-    return document.querySelector(
-        '#deleteAuctionForm input[name="__RequestVerificationToken"]'
-    ).value;
+    const token = document.querySelector(
+        'input[name="__RequestVerificationToken"]'
+    );
+
+    return token?.value;
 }
 
 

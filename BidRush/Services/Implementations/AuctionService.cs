@@ -229,5 +229,27 @@ namespace BidRush.Services.Implementations
             return auctions;
         }
         #endregion
+
+        #region Update Auction Statuses
+        public async Task<IEnumerable<AuctionStatusUpdateDto>> UpdateAuctionStatusesAsync()
+        {
+            using var connection = _context.CreateConnection();
+
+            using var multi = await connection.QueryMultipleAsync(
+                StoredProcedures.UpdateAuctionStatuses,
+                commandType: CommandType.StoredProcedure);
+
+            var response = await multi.ReadSingleAsync<SpResponseDto>();
+
+            if (response.ResponseCode != 200)
+            {
+                return Enumerable.Empty<AuctionStatusUpdateDto>();
+            }
+
+            var updates = await multi.ReadAsync<AuctionStatusUpdateDto>();
+
+            return updates.ToList();
+        }
+        #endregion
     }
 }
