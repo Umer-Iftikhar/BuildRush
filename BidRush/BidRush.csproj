@@ -8,13 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Hubs\**" />
-    <Content Remove="Hubs\**" />
-    <EmbeddedResource Remove="Hubs\**" />
-    <None Remove="Hubs\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Folder Include="Data\" />
   </ItemGroup>
 

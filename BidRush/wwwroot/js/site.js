@@ -70,3 +70,62 @@ function showToast(message, type = "success") {
 
     toast.show();
 }
+
+
+
+
+
+let auctionConnection = null;
+
+async function initializeAuctionSignalR() {
+
+    auctionConnection = new signalR.HubConnectionBuilder()
+        .withUrl("/hubs/auction")
+        .withAutomaticReconnect()
+        .build();
+
+
+    auctionConnection.on(
+        "NewBidNotification",
+        function (data) {
+
+            console.log(
+                "NewBidNotification:",
+                data
+            );
+
+            showToast(
+                `A new bid of Rs. ${Number(data.amount).toLocaleString(
+                    "en-US",
+                    {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    }
+                )} was placed on auction #${data.auctionId}.`,
+                "success"
+            );
+        }
+    );
+
+
+    try {
+
+        await auctionConnection.start();
+
+        console.log("SignalR connected.");
+
+    }
+    catch (error) {
+
+        console.error(
+            "SignalR initialization error:",
+            error
+        );
+    }
+}
+
+document.addEventListener("DOMContentLoaded", async function () {
+
+    await initializeAuctionSignalR();
+
+});

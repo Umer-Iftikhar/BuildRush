@@ -1,4 +1,5 @@
-﻿document.addEventListener("DOMContentLoaded", function () {
+﻿
+document.addEventListener("DOMContentLoaded", async function () {
 
     const deleteButton = document.querySelector(".delete-auction-btn");
 
@@ -27,15 +28,8 @@
                     }
                 );
 
-                console.log("Delete response status:", response.status);
-                console.log(
-                    "Delete response content-type:",
-                    response.headers.get("content-type")
-                );
-
                 const responseText = await response.text();
 
-                console.log("Delete raw response:", responseText);
 
                 let result;
 
@@ -126,15 +120,7 @@
                     }
                 );
 
-                console.log("Bid response status:", response.status);
-                console.log(
-                    "Bid response content-type:",
-                    response.headers.get("content-type")
-                );
-
                 const responseText = await response.text();
-
-                console.log("Bid raw response:", responseText);
 
                 let result;
 
@@ -166,14 +152,15 @@
                     return;
                 }
 
+                await auctionConnection.invoke(
+                    "JoinAuctionAsBidder",
+                    parseInt(auctionId)
+                );
+
                 showToast(
                     result.responseMessage,
                     "success"
                 );
-
-                setTimeout(() => {
-                    window.location.reload();
-                }, 1000);
 
             }
             catch (error) {
