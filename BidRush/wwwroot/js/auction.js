@@ -1,146 +1,4 @@
-﻿async function initializeAuctionSignalR() {
-
-    const auctionContainer = document.querySelector(
-        ".auction-details-container"
-    );
-
-    if (!auctionContainer) {
-        return;
-    }
-
-    const auctionId = auctionContainer.dataset.auctionId;
-
-    if (!auctionId) {
-        console.error("Auction ID not found.");
-        return;
-    }
-
-    const connection = new signalR.HubConnectionBuilder()
-        .withUrl("/hubs/auction")
-        .withAutomaticReconnect()
-        .build();
-
-
-    connection.on("BidPlaced", function (data) {
-
-        console.log("BidPlaced:", data);
-
-        const bidForm =
-            document.getElementById("placeBidForm");
-
-        const currentHighestBid =
-            document.getElementById("currentHighestBid");
-
-        const minimumNextBid =
-            document.getElementById("minimumNextBid");
-
-        const auctionEndTime =
-            document.getElementById("auctionEndTime");
-
-
-        // Everyone watching the auction.
-
-        if (currentHighestBid) {
-
-            currentHighestBid.textContent =
-                `Rs. ${Number(data.amount).toLocaleString(
-                    "en-US",
-                    {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2
-                    }
-                )}`;
-        }
-
-
-        if (auctionEndTime) {
-
-            const endTime = new Date(data.endTime);
-
-            auctionEndTime.textContent =
-                endTime.toLocaleString(
-                    "en-US",
-                    {
-                        day: "2-digit",
-                        month: "short",
-                        year: "numeric",
-                        hour: "2-digit",
-                        minute: "2-digit"
-                    }
-                );
-        }
-
-
-        // Only bidders have a bid form.
-
-        if (bidForm) {
-
-            const minimumBidIncrement =
-                parseFloat(
-                    bidForm.dataset.minimumBidIncrement
-                );
-
-            const minimumNextBidValue =
-                Number(data.amount) + minimumBidIncrement;
-
-            const bidAmount =
-                document.getElementById("bidAmount");
-
-
-            if (minimumNextBid) {
-
-                minimumNextBid.textContent =
-                    `Rs. ${minimumNextBidValue.toLocaleString(
-                        "en-US",
-                        {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2
-                        }
-                    )}`;
-            }
-
-
-            if (bidAmount) {
-
-                bidAmount.min = minimumNextBidValue;
-                bidAmount.value = minimumNextBidValue;
-            }
-        }
-
-    });
-
-
-    connection.on("AuctionEnded", function (data) {
-
-        console.log("AuctionEnded:", data);
-
-    });
-
-
-    try {
-
-        await connection.start();
-
-        console.log("SignalR connected.");
-
-        await connection.invoke(
-            "JoinAuction",
-            parseInt(auctionId)
-        );
-
-        console.log(`Joined auction_${auctionId}`);
-
-    }
-    catch (error) {
-
-        console.error(
-            "SignalR initialization error:",
-            error
-        );
-
-    }
-}
-
+﻿
 document.addEventListener("DOMContentLoaded", async function () {
 
     const deleteButton = document.querySelector(".delete-auction-btn");
@@ -294,10 +152,16 @@ document.addEventListener("DOMContentLoaded", async function () {
                     return;
                 }
 
+                await auctionConnection.invoke(
+                    "JoinAuctionAsBidder",
+                    parseInt(auctionId)
+                );
+
                 showToast(
                     result.responseMessage,
                     "success"
                 );
+
             }
             catch (error) {
 
@@ -313,7 +177,5 @@ document.addEventListener("DOMContentLoaded", async function () {
             }
         });
     }
-
-    await initializeAuctionSignalR();
 
 });

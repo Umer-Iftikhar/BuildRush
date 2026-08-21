@@ -45,6 +45,8 @@ namespace BidRush.Controllers
 
             await _hubContext.Clients.Group($"auction_{auctionId}").SendAsync("BidPlaced", result);
 
+            await _hubContext.Clients.Group($"auction_{auctionId}_bidders").SendAsync("NewBidNotification", result);
+
             return Json(new
             {
                 responseCode = result.ResponseCode,
